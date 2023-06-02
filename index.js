@@ -2,11 +2,10 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 import clipboardy from 'clipboardy';
 import fs from 'fs';
+import moment from 'moment';
 
 const firstPageUrl = '?user=bothadam&n=100&startDate=';
 const baseUrl = 'https://data.typeracer.com/pit/race_history';
-const todaysDate = new Date();
-const todaysDateFormatted = todaysDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 const scrapePage = async pageUrl => {
   try {
@@ -19,7 +18,7 @@ const scrapePage = async pageUrl => {
 
       $('.Scores__Table__Row').each((i, element) => {
         let date = $(element).find('.profileTableHeaderDate').text().trim();
-        date = (date === 'today' ? todaysDateFormatted : date).replace(',', '');
+        date = (date === 'today' ? moment() : moment(date, 'MMM. D YYYY')).format('YYYY-MM-DD');
 
         let [wpm, gap, accuracy] = $(element).find('.profileTableHeaderRaces').text().trim().split('\n');
         // We only want the words per minute number, so strip away the " WPM" part.
@@ -76,6 +75,7 @@ const writeToFile = csvResults => {
 
 const main = async () => {
   let results = await scrapePage(`${baseUrl}${firstPageUrl}`);
+  results = results.reverse().map((res, i) => ({ nr: i + 1, ...res }));
   const csvResults = convertDataToCsv(results);
 
   // Copy
