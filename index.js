@@ -24,7 +24,7 @@ const scrapePage = async pageUrl => {
         // We only want the words per minute number, so strip away the " WPM" part.
         wpm = wpm.split(' ')[0];
 
-        accuracy = accuracy.trim();
+        accuracy = accuracy.trim().split('%')[0];
 
         pageResults.push({
           date,
@@ -75,7 +75,7 @@ const writeToFile = csvResults => {
 
 const main = async () => {
   let results = await scrapePage(`${baseUrl}${firstPageUrl}`);
-  results = results.reverse().map((res, i) => ({ nr: i + 1, ...res }));
+  results = results.reverse().map((res, i) => ({ nr: i + 1, ...res, group: Math.floor((i + 1) / 10) }));
   const csvResults = convertDataToCsv(results);
 
   // Copy
