@@ -39,6 +39,20 @@ const scrapePage = async pageUrl => {
   }
 };
 
+const convertDataToCsv = data => {
+  const headers = Object.keys(data[0]);
+  const csvRows = [];
+
+  csvRows.push(headers.join(',')); // Add headers as the first row
+
+  data.forEach(obj => {
+    const values = headers.map(header => obj[header]);
+    csvRows.push(values.join(','));
+  });
+
+  return csvRows.join('\n');
+};
+
 const main = async () => {
   let results = await scrapePage(`${baseUrl}${firstPageUrl}`);
   const todaysDate = new Date();
@@ -47,5 +61,7 @@ const main = async () => {
   console.log(todaysDateFormatted);
   results = results.map(res => (res.date === 'today' ? { ...res, date: todaysDateFormatted } : res));
   console.log(results);
+  console.log('ajb ', convertDataToCsv(results));
 };
+
 main();
