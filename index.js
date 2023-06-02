@@ -1,5 +1,6 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
+import axios from 'axios';
+import cheerio from 'cheerio';
+import clipboardy from 'clipboardy';
 
 const firstPageUrl = '?user=bothadam&n=100&startDate=';
 const baseUrl = 'https://data.typeracer.com/pit/race_history';
@@ -64,7 +65,11 @@ const main = async () => {
   const todaysDateFormatted = todaysDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
   results = results.map(res => (res.date === 'today' ? { ...res, date: todaysDateFormatted } : res));
-  console.log('ajb ', convertDataToCsv(results));
+  const csvResults = convertDataToCsv(results);
+
+  // Copy
+  clipboardy.writeSync(csvResults);
+  console.log('Csv results copied to clipboard ;)');
 };
 
 main();
