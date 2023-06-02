@@ -14,9 +14,14 @@ const scrapePage = async pageUrl => {
       const $ = cheerio.load(html);
 
       $('.Scores__Table__Row').each((index, element) => {
-        const date = $(element).find('.profileTableHeaderDate').text().trim();
+        const date = $(element).find('.profileTableHeaderDate').text().trim().replace(',', '');
+
         let [wpm, gap, accuracy] = $(element).find('.profileTableHeaderRaces').text().trim().split('\n');
+        // We only want the words per minute number, so strip away the " WPM" part.
+        wpm = wpm.split(' ')[0];
+
         accuracy = accuracy.trim();
+
         pageResults.push({
           date,
           wpm,
@@ -58,9 +63,7 @@ const main = async () => {
   const todaysDate = new Date();
   const todaysDateFormatted = todaysDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  console.log(todaysDateFormatted);
   results = results.map(res => (res.date === 'today' ? { ...res, date: todaysDateFormatted } : res));
-  console.log(results);
   console.log('ajb ', convertDataToCsv(results));
 };
 
