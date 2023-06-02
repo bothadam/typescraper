@@ -1,9 +1,12 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
 import clipboardy from 'clipboardy';
+import fs from 'fs';
 
 const firstPageUrl = '?user=bothadam&n=100&startDate=';
 const baseUrl = 'https://data.typeracer.com/pit/race_history';
+const todaysDate = new Date();
+const todaysDateFormatted = todaysDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 const scrapePage = async pageUrl => {
   try {
@@ -14,8 +17,9 @@ const scrapePage = async pageUrl => {
       const html = res.data;
       const $ = cheerio.load(html);
 
-      $('.Scores__Table__Row').each((index, element) => {
-        const date = $(element).find('.profileTableHeaderDate').text().trim().replace(',', '');
+      $('.Scores__Table__Row').each((i, element) => {
+        let date = $(element).find('.profileTableHeaderDate').text().trim();
+        date = (date === 'today' ? todaysDateFormatted : date).replace(',', '');
 
         let [wpm, gap, accuracy] = $(element).find('.profileTableHeaderRaces').text().trim().split('\n');
         // We only want the words per minute number, so strip away the " WPM" part.
@@ -59,17 +63,25 @@ const convertDataToCsv = data => {
   return csvRows.join('\n');
 };
 
+const writeToFile = csvResults => {
+  fs.writeFile('typeracer-results.csv', csvResults, err => {
+    if (err) {
+      console.error('Error writing to file:', err);
+      return;
+    }
+
+    console.log('File created and data written successfully.');
+  });
+};
+
 const main = async () => {
   let results = await scrapePage(`${baseUrl}${firstPageUrl}`);
-  const todaysDate = new Date();
-  const todaysDateFormatted = todaysDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
-  results = results.map(res => (res.date === 'today' ? { ...res, date: todaysDateFormatted } : res));
   const csvResults = convertDataToCsv(results);
 
   // Copy
   clipboardy.writeSync(csvResults);
   console.log('Csv results copied to clipboard ;)');
+  writeToFile(csvResults);
 };
 
 main();
