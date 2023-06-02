@@ -1,0 +1,23 @@
+{
+  "name": "typescraper",
+  "version": "1.0.0",
+  "description": "An app to scrape my typeracer results off of the website and convert it into a csv format.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bothadam/typescraper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bothadam/typescraper/issues"
+  },
+  "homepage": "https://github.com/bothadam/typescraper#readme",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}
