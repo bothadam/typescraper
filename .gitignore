@@ -1,2 +1,4 @@
 node_modules/*
 typeracer-results.csv
+credentials.json
+.env
