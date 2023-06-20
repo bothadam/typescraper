@@ -1,6 +1,6 @@
-# typescraper
+# Typescraper
 
-An app to scrape my typeracer results off of the website and convert it into a csv format.
+A utility program to scrape my typing results from typeracer.com and upload it to a Google sheet.
 
 # Future features:
 
